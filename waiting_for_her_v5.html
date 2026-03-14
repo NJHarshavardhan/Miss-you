@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Dancing+Script:wght@500;700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--rose:#e06070;--rose2:#b84060;--muted:#7a4858;--dark:#08020a;--card:rgba(255,255,255,.03);--border:rgba(220,100,130,.1)}
+html{scroll-behavior:smooth}
+body{background:var(--dark);color:#f0dce4;font-family:'Inter',sans-serif;overflow-x:hidden;min-height:100vh}
+canvas#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+nav{position:fixed;top:0;width:100%;z-index:99;padding:14px 22px;display:flex;justify-content:center;background:rgba(8,2,10,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(220,100,130,.08)}
+.logo{font-family:'Dancing Script',cursive;font-size:18px;color:var(--rose);letter-spacing:.5px}
+.page{position:relative;z-index:1;max-width:420px;margin:0 auto;padding:0 20px}
+
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:90px 0 60px;position:relative}
+.since-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(220,100,130,.08);border:1px solid rgba(220,100,130,.18);border-radius:40px;padding:7px 16px;margin-bottom:30px;font-size:10px;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;animation:rise .8s .2s both}
+.since-pill b{width:6px;height:6px;background:var(--rose);border-radius:50%;display:inline-block;animation:glow 2s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(220,100,130,.5)}50%{box-shadow:0 0 0 5px rgba(220,100,130,0)}}
+
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,11vw,70px);line-height:1.08;font-weight:300;color:#faeef2;margin-bottom:16px;animation:rise .9s .4s both}
+.hero-title em{font-style:italic;color:var(--rose);display:block}
+.hero-sub{font-size:13px;color:var(--muted);line-height:1.9;font-weight:300;max-width:290px;margin:0 auto 40px;animation:rise .9s .6s both}
+
+/* PHONE */
+.phone-wrap{position:relative;margin-bottom:38px;animation:rise 1s .3s both}
+.phone{width:188px;height:360px;background:rgba(255,255,255,.022);border-radius:36px;border:1.5px solid rgba(220,100,130,.2);padding:18px 14px 16px;display:flex;flex-direction:column;position:relative;overflow:hidden;margin:0 auto}
+.ph-sheen{position:absolute;inset:0;border-radius:36px;background:linear-gradient(140deg,rgba(220,100,130,.07) 0%,transparent 60%);pointer-events:none}
+.notch{width:38px;height:5px;background:rgba(255,255,255,.07);border-radius:3px;margin:0 auto 12px;flex-shrink:0}
+.ph-time{font-size:27px;font-weight:300;text-align:center;color:rgba(255,255,255,.75);letter-spacing:3px;flex-shrink:0}
+.ph-date{font-size:9px;text-align:center;color:rgba(255,255,255,.22);margin:2px 0 14px;letter-spacing:1px;flex-shrink:0}
+.msgs{flex:1;display:flex;flex-direction:column;gap:7px;justify-content:flex-end;overflow:hidden}
+.bub{border-radius:16px;padding:8px 12px;font-size:10.5px;line-height:1.6;max-width:82%}
+.bub.her{background:rgba(220,100,130,.17);color:#f5ccd8;border-bottom-left-radius:3px;align-self:flex-start}
+.bub.me{background:rgba(80,25,50,.55);color:#d4b0c0;border-bottom-right-radius:3px;align-self:flex-end;text-align:right}
+.seen-line{align-self:flex-end;font-size:8.5px;color:rgba(220,100,130,.28);letter-spacing:.8px;margin-top:-3px;padding-right:2px}
+.no-reply{align-self:flex-start;display:flex;align-items:center;gap:5px;padding:3px 0 0}
+.nr-dot{width:5px;height:5px;border-radius:50%;background:rgba(220,100,130,.22);animation:nrp 2.5s infinite}
+.nr-dot:nth-child(2){animation-delay:.4s}
+.nr-dot:nth-child(3){animation-delay:.8s}
+.nr-text{font-size:8.5px;color:rgba(220,100,130,.3);letter-spacing:1.5px;text-transform:uppercase}
+@keyframes nrp{0%,100%{opacity:.2}50%{opacity:.65}}
+.ph-status{position:absolute;bottom:14px;right:14px;display:flex;align-items:center;gap:4px}
+.ph-status i{width:6px;height:6px;background:rgba(220,100,130,.35);border-radius:50%;animation:lsg 3s infinite}
+.ph-status span{font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.5px}
+@keyframes lsg{0%,100%{opacity:.25}50%{opacity:.7}}
+.ntag{position:absolute;top:-10px;right:-10px;background:var(--rose2);color:#fff;font-size:9px;border-radius:20px;padding:4px 9px;font-weight:500;animation:pop .5s .9s both;letter-spacing:.3px}
+
+.waiting-line{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(13px,3.5vw,15px);color:rgba(220,100,130,.5);text-align:center;letter-spacing:.5px;margin-bottom:10px;animation:rise .9s .7s both}
+.arrow-down{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:12px;opacity:.3;animation:bob 2.5s infinite,rise .8s .9s both}
+.arrow-down span{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+.arrow-down i{width:1px;height:22px;background:linear-gradient(to bottom,var(--rose),transparent)}
+
+.days-chip{text-align:center;margin:0 auto 50px}
+.days-num{font-family:'Cormorant Garamond',serif;font-size:clamp(56px,18vw,90px);color:var(--rose);line-height:1;font-weight:300}
+.days-label{font-size:9px;letter-spacing:3.5px;text-transform:uppercase;color:var(--muted);margin-top:2px}
+
+.sec{padding:52px 0}
+.rule{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.rule span{height:1px;flex:1;background:var(--border)}
+.rule b{width:5px;height:5px;background:var(--rose2);border-radius:50%;flex-shrink:0}
+.slabel{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.shead{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,7vw,36px);font-weight:300;line-height:1.2;color:#faeef2;margin-bottom:22px}
+.shead em{font-style:italic;color:var(--rose)}
+
+.card-list{display:flex;flex-direction:column;gap:10px}
+.nc{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px 18px;display:flex;align-items:flex-start;gap:12px;transition:.3s}
+.nc:hover{background:rgba(220,100,130,.05);border-color:rgba(220,100,130,.25);transform:translateX(3px)}
+.nc-ico{font-size:19px;flex-shrink:0;margin-top:1px}
+.nc-t{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.nc-p{font-size:13px;color:#c9a0b0;line-height:1.8;font-weight:300}
+
+/* SPEND TIME — chat style cards */
+.spend-list{display:flex;flex-direction:column;gap:10px}
+.sp{border-radius:18px;padding:16px 18px;transition:.3s}
+.sp.ask{background:rgba(80,25,50,.45);border:1px solid rgba(220,100,130,.1);border-bottom-right-radius:4px;align-self:stretch}
+.sp.ask:hover{border-color:rgba(220,100,130,.28);transform:translateX(-3px)}
+.sp-tag{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.sp-p{font-size:13px;color:#d4b0c0;line-height:1.8;font-weight:300}
+
+/* POSSESSIVE */
+.poss-wrap{display:flex;flex-direction:column;gap:10px}
+.pw{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px 18px;transition:.3s;border-left:2px solid var(--rose2);border-top-left-radius:4px}
+.pw:hover{background:rgba(220,100,130,.05);border-left-color:var(--rose);transform:translateX(3px)}
+.pw-t{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.pw-p{font-size:13px;color:#c9a0b0;line-height:1.8;font-weight:300}
+.pw-p em{font-style:italic;color:rgba(220,100,130,.8)}
+
+/* HONEST BOX */
+.honest{background:rgba(220,100,130,.05);border:1px solid rgba(220,100,130,.16);border-radius:20px;padding:22px 20px;text-align:center;margin-bottom:0}
+.honest-big{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,5vw,24px);font-style:italic;font-weight:300;color:#f0d0da;line-height:1.6;margin-bottom:8px}
+.honest-small{font-size:12px;color:var(--muted);font-weight:300;line-height:1.8}
+
+/* LETTER */
+.letter-card{background:rgba(255,255,255,.02);border:1px solid rgba(220,100,130,.12);border-radius:22px;padding:28px 22px;position:relative;overflow:hidden}
+.letter-card::before{content:'\201C';position:absolute;top:-4px;left:14px;font-family:'Cormorant Garamond',serif;font-size:110px;color:rgba(220,100,130,.05);line-height:1;pointer-events:none}
+.lp{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(15px,4vw,17px);color:#d0a0b4;line-height:2.05;font-weight:300;margin-bottom:16px}
+.lsign{font-family:'Dancing Script',cursive;font-size:22px;color:var(--rose);text-align:right;display:block;margin-top:4px}
+
+footer{text-align:center;padding:48px 0 64px;border-top:1px solid var(--border)}
+.f-q{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,5vw,21px);font-style:italic;font-weight:300;color:#b07080;margin-bottom:20px;line-height:1.65}
+.hrow{display:flex;justify-content:center;gap:11px}
+.hrt{width:15px;height:15px;background:var(--rose2);clip-path:path('M7.5 14C7.5 14 0 9 0 4.5C0 2 2 0 4.5 0C5.8 0 7 .7 7.5 1.7C8 .7 9.2 0 10.5 0C13 0 15 2 15 4.5C15 9 7.5 14 7.5 14Z');animation:hb 1.9s ease-in-out infinite}
+.hrt:nth-child(2){animation-delay:.2s;opacity:.6}
+.hrt:nth-child(3){animation-delay:.4s}
+.hrt:nth-child(4){animation-delay:.6s;opacity:.6}
+.hrt:nth-child(5){animation-delay:.8s}
+@keyframes hb{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(1.45);opacity:1}}
+
+.rv{opacity:0;transform:translateY(26px);transition:opacity .85s ease,transform .85s ease}
+.rv.on{opacity:1;transform:none}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+@media(max-width:380px){.phone{width:168px;height:335px}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<nav><div class="logo">for her, always ♡</div></nav>
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="since-pill"><b></b> since oct 12, 2025</div>
+
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="ph-sheen"></div>
+      <div class="notch"></div>
+      <div class="ph-time" id="clk">--:--</div>
+      <div class="ph-date" id="ddt">---</div>
+      <div class="msgs">
+        <div class="bub her">busy with work today 😔</div>
+        <div class="bub me">take your time, I'm here 🙂</div>
+        <div class="bub me">whenever you're free, I'm waiting</div>
+        <div class="seen-line">sent · no reply</div>
+        <div class="no-reply">
+          <div class="nr-dot"></div><div class="nr-dot"></div><div class="nr-dot"></div>
+          <span class="nr-text">still waiting...</span>
+        </div>
+      </div>
+      <div class="ph-status"><i></i><span>last seen a while ago</span></div>
+    </div>
+    <div class="ntag">her ♡</div>
+  </div>
+
+  <div class="waiting-line">waiting for her — every single second</div>
+  <h1 class="hero-title">still here,<br><em>still yours</em></h1>
+  <p class="hero-sub">Every notification. Every silence. I check it hoping — just hoping — it's you.</p>
+
+  <div class="arrow-down"><span>scroll</span><i></i></div>
+</section>
+
+<!-- DAYS -->
+<div class="days-chip rv">
+  <div class="days-num" id="daysSince">—</div>
+  <div class="days-label">days of us</div>
+</div>
+
+<!-- NOTIFICATION SECTION -->
+<section class="sec rv">
+  <div class="rule"><span></span><b></b><span></span></div>
+  <div class="slabel">every time the phone lights up</div>
+  <h2 class="shead">I check it<br><em>hoping it's her</em></h2>
+  <div class="card-list">
+    <div class="nc">
+      <div class="nc-ico">🔔</div>
+      <div class="nc-body">
+        <div class="nc-t">the screen lights up</div>
+        <div class="nc-p">My heart does this stupid little jump every single time. Every. Single. Time. Just in case it's her name.</div>
+      </div>
+    </div>
+    <div class="nc">
+      <div class="nc-ico">💬</div>
+      <div class="nc-body">
+        <div class="nc-t">when it's not her</div>
+        <div class="nc-p">I close it. Don't even read it properly. I'm saving that attention for one person only.</div>
+      </div>
+    </div>
+    <div class="nc">
+      <div class="nc-ico">🌙</div>
+      <div class="nc-body">
+        <div class="nc-t">past midnight</div>
+        <div class="nc-p">If she texts at 2am — I'm awake. I was already awake. Waiting is just what I do now.</div>
+      </div>
+    </div>
+    <div class="nc">
+      <div class="nc-ico">☀️</div>
+      <div class="nc-body">
+        <div class="nc-t">first thing every morning</div>
+        <div class="nc-p">Before I do anything — I check. One text from her and the whole day just feels different. Lighter.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPEND TIME -->
+<section class="sec rv">
+  <div class="rule"><span></span><b></b><span></span></div>
+  <div class="slabel">just a little time</div>
+  <h2 class="shead">I just want to<br><em>spend time with her</em></h2>
+
+  <div class="honest" style="margin-bottom:18px">
+    <div class="honest-big">Not hours. Not all day.<br>Just — her, and me, talking.</div>
+    <div class="honest-small">That's it. That's genuinely all I want. A little bit of her time feels like everything.</div>
+  </div>
+
+  <div class="spend-list">
+    <div class="sp ask">
+      <div class="sp-tag">what I actually want</div>
+      <div class="sp-p">Just talk to me when you're free. Even 10 minutes. I don't need a long conversation — I just want to hear how your day was.</div>
+    </div>
+    <div class="sp ask">
+      <div class="sp-tag">on her worst days</div>
+      <div class="sp-p">I don't want you to be okay for me. Vent. Be tired. Be frustrated. I want to be the person you say it all to — not the one you have to perform for.</div>
+    </div>
+    <div class="sp ask">
+      <div class="sp-tag">even silence counts</div>
+      <div class="sp-p">We don't have to talk nonstop. Just knowing you're there, on the other side of the screen — that already feels like company to me.</div>
+    </div>
+    <div class="sp ask">
+      <div class="sp-tag">more than anything</div>
+      <div class="sp-p">I want to be part of your day. A small part, a big part — any part. Just let me in a little.</div>
+    </div>
+  </div>
+</section>
+
+<!-- POSSESSIVE -->
+<section class="sec rv">
+  <div class="rule"><span></span><b></b><span></span></div>
+  <div class="slabel">being honest about it</div>
+  <h2 class="shead">Yeah, I'm getting<br><em>a little possessive</em></h2>
+
+  <div class="honest" style="margin-bottom:18px">
+    <div class="honest-big">I didn't plan to feel this way.<br>It just happened.</div>
+    <div class="honest-small">And honestly? I don't want to hide it. This is what caring about someone too much feels like. I'm in it.</div>
+  </div>
+
+  <div class="poss-wrap">
+    <div class="pw">
+      <div class="pw-t">when she's busy for too long</div>
+      <div class="pw-p">I start wondering if she's okay. Then I wonder if she's talking to someone else. Then I tell myself to calm down. Then I check my phone again. <em>Yeah.</em></div>
+    </div>
+    <div class="pw">
+      <div class="pw-t">when she doesn't reply</div>
+      <div class="pw-p">I don't get angry. I just feel this quiet ache. Like — am I not worth a few minutes? And then she replies and I feel stupid for even thinking it.</div>
+    </div>
+    <div class="pw">
+      <div class="pw-t">when she's happy without me</div>
+      <div class="pw-p">I want to be part of that happiness. Not replace it — just be somewhere in it. I want to be the reason she smiles at least <em>once</em> that day.</div>
+    </div>
+    <div class="pw">
+      <div class="pw-t">what I tell myself</div>
+      <div class="pw-p">She's busy. She's not gone. She came back every time before. She'll come back again. I just have to wait a little longer. <em>I can do that.</em></div>
+    </div>
+  </div>
+</section>
+
+<!-- LETTER -->
+<section class="sec rv" id="letter">
+  <div class="rule"><span></span><b></b><span></span></div>
+  <div class="slabel">from me, to you</div>
+  <h2 class="shead"><em>For her.</em><br>She knows who she is.</h2>
+  <div class="letter-card">
+    <p class="lp">Since October 12th, you've been the person I reach for first. Every morning. Every quiet moment. Every time something happens and I want to share it — it's always you.</p>
+    <p class="lp">I'm not gonna pretend I'm chill about this. I'm not. I think about you too much. I notice when you're gone. I get a little too happy when you come back. That's just where I am with you.</p>
+    <p class="lp">All I want is your time. Whenever you can spare it. I'll be here — waiting, caring, a little possessive, and completely yours.</p>
+    <span class="lsign">yours, since that very first day ♡</span>
+  </div>
+</section>
+
+<footer class="rv">
+  <p class="f-q">"I don't need you every second.<br>I just need to know you're mine."</p>
+  <div class="hrow">
+    <div class="hrt"></div><div class="hrt"></div><div class="hrt"></div><div class="hrt"></div><div class="hrt"></div>
+  </div>
+  <p style="margin-top:18px;font-size:10px;color:rgba(100,40,60,.45);letter-spacing:1px">for her · oct 12, 2025 → always</p>
+</footer>
+
+</div>
+
+<script>
+const cv=document.getElementById('bg'),cx=cv.getContext('2d');
+let W,H,pts=[];
+function mk(rand){const c=['#e06070','#b84060','#c8a8e8','#d4a0c0','#9a5068'];return{x:Math.random()*W,y:rand?Math.random()*H:H+16,vx:(Math.random()-.5)*.14,vy:-(Math.random()*.28+.07),s:Math.random()*8+3,o:Math.random()*.3+.05,r:Math.random()*Math.PI*2,rs:(Math.random()-.5)*.011,c:c[~~(Math.random()*c.length)],h:Math.random()<.6}}
+function rsz(){W=cv.width=innerWidth;H=cv.height=innerHeight;pts=[];const n=Math.min(48,~~(W*H/16000));for(let i=0;i<n;i++)pts.push(mk(true))}
+function dh(p){cx.save();cx.globalAlpha=p.o;cx.fillStyle=p.c;cx.translate(p.x,p.y);cx.rotate(p.r);cx.scale(p.s/10,p.s/10);cx.beginPath();cx.moveTo(0,1.5);cx.bezierCurveTo(5,-2,10,2,0,8);cx.bezierCurveTo(-10,2,-5,-2,0,1.5);cx.closePath();cx.fill();cx.restore()}
+function draw(){cx.clearRect(0,0,W,H);pts.forEach((p,i)=>{p.y+=p.vy;p.x+=p.vx;p.r+=p.rs;if(p.y<-18)pts[i]=mk(false);p.h?dh(p):(cx.save(),cx.globalAlpha=p.o,cx.fillStyle=p.c,cx.beginPath(),cx.arc(p.x,p.y,p.s/3,0,Math.PI*2),cx.fill(),cx.restore())});requestAnimationFrame(draw)}
+rsz();draw();addEventListener('resize',rsz);
+
+function clk(){const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0');document.getElementById('clk').textContent=h+':'+m;const d=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];document.getElementById('ddt').textContent=d[n.getDay()]+' · '+mo[n.getMonth()]+' '+n.getDate()}
+clk();setInterval(clk,30000);
+
+document.getElementById('daysSince').textContent=Math.floor((new Date()-new Date('2025-10-12T00:00:00'))/86400000);
+
+const ro=new IntersectionObserver(e=>e.forEach(el=>el.isIntersecting&&el.target.classList.add('on')),{threshold:.08});
+document.querySelectorAll('.rv').forEach(el=>ro.observe(el));
+
+document.addEventListener('click',e=>{if(e.target.closest('button,input,a'))return;for(let i=0;i<5;i++){const p=mk(false);p.x=e.clientX+(Math.random()-.5)*20;p.y=e.clientY;p.o=.7;p.vy=-(Math.random()*.5+.25);p.h=true;pts.push(p);setTimeout(()=>pts.splice(pts.indexOf(p),1),3000)}});
+</script>
+</body>
+</html>
